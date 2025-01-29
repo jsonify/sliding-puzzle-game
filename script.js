@@ -37,6 +37,21 @@ function challengePlayer(playerId) {
     document.getElementById('gameStatus').textContent = 'Challenge sent...';
 }
 
+function acceptChallenge(challengerId, roomId) {
+    socket.emit('acceptChallenge', { challengerId, roomId });
+    // Remove the challenge modal
+    const modal = document.querySelector('.win-modal');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
+}
+
+function declineChallenge(challengerId, modalElement) {
+    socket.emit('declineChallenge', challengerId);
+    // Remove the challenge modal
+    document.body.removeChild(modalElement);
+}
+
 const COLORS = [
     '#FF6B6B', // Red
     '#4ECDC4', // Teal
@@ -247,6 +262,24 @@ function initializeGame() {
 // Socket.IO Event Listeners
 socket.on('playerList', (players) => {
     updatePlayerList(players);
+});
+
+socket.on('challengeReceived', (data) => {
+    const modal = document.createElement('div');
+    modal.className = 'win-modal';
+    modal.innerHTML = `
+        <div class="win-modal-content">
+            <h2>Challenge Received!</h2>
+            <p>${data.challengerName} wants to play with you!</p>
+            <button onclick="acceptChallenge('${data.challengerId}', '${data.roomId}')">Accept</button>
+            <button onclick="declineChallenge('${data.challengerId}', this.parentElement.parentElement)">Decline</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+});
+
+socket.on('challengeDeclined', (challengerId) => {
+    document.getElementById('gameStatus').textContent = 'Challenge declined!';
 });
 
 socket.on('waiting', () => {

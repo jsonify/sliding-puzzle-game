@@ -94,11 +94,42 @@ io.on('connection', (socket) => {
 });
 
 function createInitialTiles() {
-    // This should match your client-side tile creation logic
-    // Return the initial game state
+    const tiles = [];
+    const COLORS = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5'
+    ];
+    const GRID_SIZE = 5;
+    
+    // Create 4 tiles of each color
+    for (let colorIndex = 0; colorIndex < COLORS.length - 1; colorIndex++) {
+        for (let i = 0; i < 4; i++) {
+            tiles.push({ color: COLORS[colorIndex], isEmpty: false });
+        }
+    }
+    
+    // Add 4 tiles of the last color
+    for (let i = 0; i < 4; i++) {
+        tiles.push({ color: COLORS[COLORS.length - 1], isEmpty: false });
+    }
+    
+    // Add empty tile
+    tiles.push({ color: '#e5e7eb', isEmpty: true });
+    
+    // Shuffle tiles and create boards
+    const shuffledTiles = [...tiles].sort(() => Math.random() - 0.5);
+    const solutionTiles = [...tiles].sort(() => Math.random() - 0.5);
+    
+    // Create boards
+    const board = [];
+    const solution = [];
+    for (let i = 0; i < GRID_SIZE; i++) {
+        board.push(shuffledTiles.slice(i * GRID_SIZE, (i + 1) * GRID_SIZE));
+        solution.push(solutionTiles.slice(i * GRID_SIZE, (i + 1) * GRID_SIZE));
+    }
+    
     return {
-        board: [],
-        solution: []
+        board: board,
+        solution: solution
     };
 }
 
