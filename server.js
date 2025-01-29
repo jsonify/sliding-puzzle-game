@@ -101,7 +101,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('moveMade', (data) => {
-        socket.broadcast.to(data.roomId).emit('opponentMove', {
+        // Broadcast the move to everyone in the room except the sender
+        socket.to(data.roomId).emit('opponentMove', {
             playerId: socket.id,
             board: data.board
         });

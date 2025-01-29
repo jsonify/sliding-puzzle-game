@@ -131,7 +131,18 @@ function moveTile(row, col) {
     currentEmptyPos = { row, col };
 
     renderBoard();
-    checkWin();
+    
+    // Broadcast move to opponent if in multiplayer game
+    if (isGameActive && currentRoom) {
+        socket.emit('moveMade', {
+            roomId: currentRoom,
+            board: board
+        });
+    }
+    
+    if (checkWin() && isGameActive) {
+        handleWin();
+    }
 }
 
 function checkWin() {
