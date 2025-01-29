@@ -15,7 +15,12 @@ function toggleMenu() {
 
 function selectGameMode(mode) {
     currentGameMode = mode;
-    document.querySelector('.side-menu').classList.remove('active');
+    const menuButton = document.querySelector('.menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+    
+    // Hide menu and show menu button
+    sideMenu.classList.remove('active');
+    menuButton.style.display = 'block';
     
     // Reset game state
     const loginContainer = document.getElementById('login-container');
@@ -32,6 +37,7 @@ function selectGameMode(mode) {
         multiPlayerMode.style.display = 'none';
         playerList.style.display = 'none';
         gameStatus.style.display = 'none';
+        document.querySelector('.solution-container').style.display = 'block';
         initializeGame();
     } else {
         loginContainer.style.display = 'block';
@@ -40,6 +46,7 @@ function selectGameMode(mode) {
         multiPlayerMode.style.display = 'block';
         playerList.style.display = 'block';
         gameStatus.style.display = 'block';
+        document.querySelector('.solution-container').style.display = 'block';
     }
 }
 
