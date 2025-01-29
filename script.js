@@ -311,7 +311,27 @@ function handleWin() {
 }
 
 function initializeGame() {
-    randomizeGame();
+    // Create and shuffle tiles for both boards
+    const tiles = createColorPattern();
+    const shuffledMainTiles = shuffleTiles(tiles);
+    const shuffledSolutionTiles = shuffleTiles(tiles);
+
+    // Create boards from shuffled tiles
+    board = createBoard(shuffledMainTiles);
+    solutionPattern = createBoard(shuffledSolutionTiles);
+
+    // Find empty tile position in main board
+    board.forEach((row, rowIndex) => {
+        row.forEach((tile, colIndex) => {
+            if (tile.isEmpty) {
+                currentEmptyPos = { row: rowIndex, col: colIndex };
+            }
+        });
+    });
+
+    // Render both boards
+    renderBoard();
+    renderSolutionBoard();
 }
 
 // Socket.IO Event Listeners
@@ -379,5 +399,6 @@ document.getElementById('randomize')?.addEventListener('click', () => {
 
 // Initialize the game
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('solveAllButLast').disabled = true;
+    // Start in single player mode by default
+    selectGameMode('single');
 });
