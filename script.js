@@ -2,6 +2,31 @@ const socket = io();
 let currentRoom = null;
 let isGameActive = false;
 let currentUsername = '';
+let currentGameMode = null;
+
+function toggleMenu() {
+    document.querySelector('.side-menu').classList.toggle('active');
+}
+
+function selectGameMode(mode) {
+    currentGameMode = mode;
+    document.querySelector('.side-menu').classList.remove('active');
+    
+    // Reset game state
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('game-container').style.display = 'none';
+    
+    // Update UI based on game mode
+    if (mode === 'single') {
+        document.querySelector('.players-container').style.display = 'none';
+        document.getElementById('playerList').style.display = 'none';
+        document.getElementById('gameStatus').style.display = 'none';
+    } else {
+        document.querySelector('.players-container').style.display = 'flex';
+        document.getElementById('playerList').style.display = 'block';
+        document.getElementById('gameStatus').style.display = 'block';
+    }
+}
 
 function setUsername() {
     const usernameInput = document.getElementById('username');
@@ -11,7 +36,15 @@ function setUsername() {
         currentUsername = username;
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('game-container').style.display = 'block';
-        socket.emit('setUsername', username);
+        
+        if (currentGameMode === 'single') {
+            // Initialize single player game
+            initializeGame();
+            document.getElementById('solveAllButLast').disabled = false;
+        } else {
+            // Initialize multiplayer game
+            socket.emit('setUsername', username);
+        }
     }
 }
 
