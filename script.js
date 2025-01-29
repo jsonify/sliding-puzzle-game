@@ -5,7 +5,12 @@ let currentUsername = '';
 let currentGameMode = null;
 
 function toggleMenu() {
-    document.querySelector('.side-menu').classList.toggle('active');
+    const menuButton = document.querySelector('.menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+    const isMenuOpen = sideMenu.classList.toggle('active');
+    
+    // Hide/show the hamburger button based on menu state
+    menuButton.style.display = isMenuOpen ? 'none' : 'block';
 }
 
 function selectGameMode(mode) {
