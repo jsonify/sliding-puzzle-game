@@ -196,9 +196,7 @@ function checkWin() {
         <div class="win-modal-content">
             <h2>Congratulations! 🎉</h2>
             <p>You solved the puzzle!</p>
-            <button onclick="randomizeGame(); document.body.removeChild(this.parentElement.parentElement)">
-                Start New Game
-            </button>
+            <button onclick="startNewGame(this)">Start New Game</button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -400,6 +398,15 @@ document.getElementById('randomize')?.addEventListener('click', () => {
         randomizeGame();
     }
 });
+
+function startNewGame(buttonElement) {
+    // Remove the modal
+    const modal = buttonElement.parentElement.parentElement;
+    document.body.removeChild(modal);
+    
+    // Start a new randomized game
+    randomizeGame();
+}
 
 // Initialize the game
 window.addEventListener('DOMContentLoaded', () => {
