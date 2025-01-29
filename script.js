@@ -16,11 +16,14 @@ let solutionPattern = [];
 function createColorPattern() {
     const tiles = [];
     // Create 4 tiles of each color (except last color which gets 3 + empty)
-    for (let colorIndex = 0; colorIndex < COLORS.length; colorIndex++) {
-        const tilesPerColor = colorIndex === COLORS.length - 1 ? 3 : 4;
-        for (let i = 0; i < tilesPerColor; i++) {
+    for (let colorIndex = 0; colorIndex < COLORS.length - 1; colorIndex++) {
+        for (let i = 0; i < 4; i++) {
             tiles.push({ color: COLORS[colorIndex], isEmpty: false });
         }
+    }
+    // Add 3 tiles of the last color
+    for (let i = 0; i < 3; i++) {
+        tiles.push({ color: COLORS[COLORS.length - 1], isEmpty: false });
     }
     // Add empty tile
     tiles.push({ color: '#e5e7eb', isEmpty: true });
