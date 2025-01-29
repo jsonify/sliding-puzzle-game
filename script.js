@@ -38,6 +38,10 @@ function selectGameMode(mode) {
         playerList.style.display = 'none';
         gameStatus.style.display = 'none';
         document.querySelector('.solution-container').style.display = 'block';
+        // Reset game state
+        currentRoom = null;
+        isGameActive = false;
+        currentUsername = '';
         initializeGame();
     } else {
         loginContainer.style.display = 'block';

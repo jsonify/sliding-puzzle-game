@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
     <style>
+        .puzzle-board.single-player {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        
         .menu-toggle {
             position: fixed;
             top: 20px;
@@ -143,7 +151,7 @@
                             <button id="randomize" class="button">Randomize</button>
                             <button id="solveAllButLast" class="button">Solve All But Last</button>
                         </div>
-                        <div id="puzzle-board" class="puzzle-board"></div>
+                        <div id="puzzle-board" class="puzzle-board single-player"></div>
                     </div>
                 </div>
                 
