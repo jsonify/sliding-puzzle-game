@@ -18,11 +18,15 @@ function selectGameMode(mode) {
     
     // Update UI based on game mode
     if (mode === 'single') {
-        document.querySelector('.players-container').style.display = 'none';
+        document.getElementById('single-player-mode').style.display = 'block';
+        document.getElementById('multi-player-mode').style.display = 'none';
         document.getElementById('playerList').style.display = 'none';
         document.getElementById('gameStatus').style.display = 'none';
+        // Initialize single player game immediately
+        initializeGame();
     } else {
-        document.querySelector('.players-container').style.display = 'flex';
+        document.getElementById('single-player-mode').style.display = 'none';
+        document.getElementById('multi-player-mode').style.display = 'block';
         document.getElementById('playerList').style.display = 'block';
         document.getElementById('gameStatus').style.display = 'block';
     }
@@ -369,6 +373,11 @@ socket.on('playerDisconnected', () => {
 // Event Listeners
 document.getElementById('findGame').addEventListener('click', findGame);
 document.getElementById('solveAllButLast').addEventListener('click', solveAllButLast);
+document.getElementById('randomize')?.addEventListener('click', () => {
+    if (currentGameMode === 'single') {
+        randomizeGame();
+    }
+});
 
 // Initialize the game
 window.addEventListener('DOMContentLoaded', () => {
