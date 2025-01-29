@@ -79,9 +79,11 @@ io.on('connection', (socket) => {
         socket.join(roomId);
         
         // Start the game
+        const initialTiles = createInitialTiles();
         const gameState = {
             roomId: roomId,
-            board: createInitialTiles(),
+            board: initialTiles.board,
+            solution: initialTiles.solution,
             players: [challengerId, socket.id],
             startTime: Date.now()
         };

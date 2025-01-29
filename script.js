@@ -230,6 +230,15 @@ function startGame(gameState) {
     board = gameState.board;
     solutionPattern = gameState.solution;
     
+    // Find empty position
+    board.forEach((row, rowIndex) => {
+        row.forEach((tile, colIndex) => {
+            if (tile.isEmpty) {
+                currentEmptyPos = { row: rowIndex, col: colIndex };
+            }
+        });
+    });
+    
     renderBoard();
     renderSolutionBoard();
     renderOpponentBoard(gameState.board);
