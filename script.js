@@ -21,8 +21,8 @@ function createColorPattern() {
             tiles.push({ color: COLORS[colorIndex], isEmpty: false });
         }
     }
-    // Add 3 tiles of the last color
-    for (let i = 0; i < 3; i++) {
+    // Add 4 tiles of the last color
+    for (let i = 0; i < 4; i++) {
         tiles.push({ color: COLORS[COLORS.length - 1], isEmpty: false });
     }
     // Add empty tile
