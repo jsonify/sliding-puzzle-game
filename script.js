@@ -88,7 +88,20 @@ function checkWin() {
             }
         }
     }
-    alert('Congratulations! You solved the puzzle! 🎉');
+    
+    // Create and show win modal
+    const modal = document.createElement('div');
+    modal.className = 'win-modal';
+    modal.innerHTML = `
+        <div class="win-modal-content">
+            <h2>Congratulations! 🎉</h2>
+            <p>You solved the puzzle!</p>
+            <button onclick="randomizeGame(); document.body.removeChild(this.parentElement.parentElement)">
+                Start New Game
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
     return true;
 }
 
@@ -129,21 +142,20 @@ function renderSolutionBoard() {
 }
 
 function solveAllButLast() {
-    // Create a nearly solved board based on the current solution pattern
-    const newBoard = solutionPattern.map(row => row.map(tile => ({ ...tile })));
+    // Set the board to match the solution pattern
+    board = solutionPattern.map(row => row.map(tile => ({ ...tile })));
     
-    // Swap the last two tiles to make it one move away from solution
+    // Move empty tile to the last position
+    board[EMPTY_POSITION.row][EMPTY_POSITION.col] = { color: '#e5e7eb', isEmpty: true };
+    currentEmptyPos = { ...EMPTY_POSITION };
+    
+    // Swap the last two non-empty tiles
     const lastRow = GRID_SIZE - 1;
     const secondLastCol = GRID_SIZE - 2;
-    const lastCol = GRID_SIZE - 1;
+    const thirdLastCol = GRID_SIZE - 3;
     
-    // Swap the last non-empty tile with the second-to-last position
-    [newBoard[lastRow][secondLastCol], newBoard[lastRow][lastCol]] = 
-    [newBoard[lastRow][lastCol], newBoard[lastRow][secondLastCol]];
-    
-    // Update the board and empty position
-    board = newBoard;
-    currentEmptyPos = { row: lastRow, col: lastCol };
+    [board[lastRow][thirdLastCol], board[lastRow][secondLastCol]] = 
+    [board[lastRow][secondLastCol], board[lastRow][thirdLastCol]];
     
     renderBoard();
 }
