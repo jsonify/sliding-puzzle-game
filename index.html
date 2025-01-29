@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sliding Puzzle</title>
+    <title>Multiplayer Sliding Puzzle Race</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
         .win-modal {
             position: fixed;
@@ -40,10 +41,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Sliding Puzzle</h1>
-        <div class="button-container">
-            <button id="randomize" class="button">Randomize</button>
-            <button id="solveAllButLast" class="button">Solve All But Last</button>
+        <h1>Multiplayer Sliding Puzzle Race</h1>
+        <div id="gameStatus" class="game-status">Waiting for opponent...</div>
+        <div class="players-container">
+            <div class="player-board">
+                <h2>Your Board</h2>
+                <div class="button-container">
+                    <button id="findGame" class="button">Find Game</button>
+                    <button id="solveAllButLast" class="button" disabled>Solve All But Last</button>
+                </div>
+                <div id="puzzle-board" class="puzzle-board"></div>
+            </div>
+            <div class="player-board">
+                <h2>Opponent's Board</h2>
+                <div id="opponent-board" class="puzzle-board opponent"></div>
+            </div>
         </div>
         
         <div id="puzzle-board" class="puzzle-board"></div>

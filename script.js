@@ -1,3 +1,7 @@
+const socket = io();
+let currentRoom = null;
+let isGameActive = false;
+
 const COLORS = [
     '#FF6B6B', // Red
     '#4ECDC4', // Teal
@@ -160,37 +164,88 @@ function solveAllButLast() {
     renderBoard();
 }
 
-function randomizeGame() {
-    // Create and shuffle tiles for both boards
-    const tiles = createColorPattern();
-    const shuffledMainTiles = shuffleTiles(tiles);
-    const shuffledSolutionTiles = shuffleTiles(tiles);
+function findGame() {
+    document.getElementById('findGame').disabled = true;
+    document.getElementById('gameStatus').textContent = 'Finding opponent...';
+    socket.emit('findGame');
+}
 
-    // Create boards from shuffled tiles
-    board = createBoard(shuffledMainTiles);
-    solutionPattern = createBoard(shuffledSolutionTiles);
-
-    // Find empty tile position in main board
-    board.forEach((row, rowIndex) => {
-        row.forEach((tile, colIndex) => {
-            if (tile.isEmpty) {
-                currentEmptyPos = { row: rowIndex, col: colIndex };
-            }
-        });
-    });
-
-    // Render both boards
+function startGame(gameState) {
+    isGameActive = true;
+    currentRoom = gameState.roomId;
+    document.getElementById('gameStatus').textContent = 'Game Started!';
+    document.getElementById('solveAllButLast').disabled = false;
+    
+    // Initialize boards with provided game state
+    board = gameState.board;
+    solutionPattern = gameState.solution;
+    
     renderBoard();
     renderSolutionBoard();
+    renderOpponentBoard(gameState.board);
+}
+
+function renderOpponentBoard(opponentBoard) {
+    const opponentBoardElement = document.getElementById('opponent-board');
+    opponentBoardElement.innerHTML = '';
+
+    opponentBoard.forEach(row => {
+        row.forEach(tile => {
+            const tileElement = document.createElement('div');
+            tileElement.className = `tile ${tile.isEmpty ? 'empty' : ''}`;
+            tileElement.style.backgroundColor = tile.color;
+            opponentBoardElement.appendChild(tileElement);
+        });
+    });
+}
+
+function handleWin() {
+    if (isGameActive && currentRoom) {
+        socket.emit('gameWon', currentRoom);
+    }
 }
 
 function initializeGame() {
     randomizeGame();
 }
 
+// Socket.IO Event Listeners
+socket.on('waiting', () => {
+    document.getElementById('gameStatus').textContent = 'Waiting for opponent...';
+});
+
+socket.on('gameStart', (gameState) => {
+    startGame(gameState);
+});
+
+socket.on('opponentMove', (data) => {
+    renderOpponentBoard(data.board);
+});
+
+socket.on('gameOver', (data) => {
+    const isWinner = data.winnerId === socket.id;
+    const modal = document.createElement('div');
+    modal.className = 'win-modal';
+    modal.innerHTML = `
+        <div class="win-modal-content">
+            <h2>${isWinner ? 'You Won! 🎉' : 'Opponent Won!'}</h2>
+            <p>Game completed in ${((data.endTime - data.startTime) / 1000).toFixed(2)} seconds</p>
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+});
+
+socket.on('playerDisconnected', () => {
+    document.getElementById('gameStatus').textContent = 'Opponent disconnected!';
+    isGameActive = false;
+});
+
 // Event Listeners
-document.getElementById('randomize').addEventListener('click', randomizeGame);
+document.getElementById('findGame').addEventListener('click', findGame);
 document.getElementById('solveAllButLast').addEventListener('click', solveAllButLast);
 
 // Initialize the game
-window.addEventListener('DOMContentLoaded', initializeGame);
+window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('solveAllButLast').disabled = true;
+});
