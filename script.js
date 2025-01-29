@@ -310,6 +310,10 @@ function handleWin() {
     }
 }
 
+function randomizeGame() {
+    initializeGame();
+}
+
 function initializeGame() {
     // Create and shuffle tiles for both boards
     const tiles = createColorPattern();
