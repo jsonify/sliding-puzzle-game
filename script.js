@@ -13,22 +13,28 @@ function selectGameMode(mode) {
     document.querySelector('.side-menu').classList.remove('active');
     
     // Reset game state
-    document.getElementById('login-container').style.display = 'block';
-    document.getElementById('game-container').style.display = 'none';
+    const loginContainer = document.getElementById('login-container');
+    const gameContainer = document.getElementById('game-container');
+    const singlePlayerMode = document.getElementById('single-player-mode');
+    const multiPlayerMode = document.getElementById('multi-player-mode');
+    const playerList = document.getElementById('playerList');
+    const gameStatus = document.getElementById('gameStatus');
     
-    // Update UI based on game mode
     if (mode === 'single') {
-        document.getElementById('single-player-mode').style.display = 'block';
-        document.getElementById('multi-player-mode').style.display = 'none';
-        document.getElementById('playerList').style.display = 'none';
-        document.getElementById('gameStatus').style.display = 'none';
-        // Initialize single player game immediately
+        loginContainer.style.display = 'none';
+        gameContainer.style.display = 'block';
+        singlePlayerMode.style.display = 'block';
+        multiPlayerMode.style.display = 'none';
+        playerList.style.display = 'none';
+        gameStatus.style.display = 'none';
         initializeGame();
     } else {
-        document.getElementById('single-player-mode').style.display = 'none';
-        document.getElementById('multi-player-mode').style.display = 'block';
-        document.getElementById('playerList').style.display = 'block';
-        document.getElementById('gameStatus').style.display = 'block';
+        loginContainer.style.display = 'block';
+        gameContainer.style.display = 'none';
+        singlePlayerMode.style.display = 'none';
+        multiPlayerMode.style.display = 'block';
+        playerList.style.display = 'block';
+        gameStatus.style.display = 'block';
     }
 }
 
@@ -40,15 +46,7 @@ function setUsername() {
         currentUsername = username;
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('game-container').style.display = 'block';
-        
-        if (currentGameMode === 'single') {
-            // Initialize single player game
-            initializeGame();
-            document.getElementById('solveAllButLast').disabled = false;
-        } else {
-            // Initialize multiplayer game
-            socket.emit('setUsername', username);
-        }
+        socket.emit('setUsername', username);
     }
 }
 
