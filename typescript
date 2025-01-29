@@ -1,0 +1,133 @@
+import { createContext, useContext, ReactNode, useState } from 'react';
+import { Board, GameMode } from '../types';
+
+interface GameContextType {
+  gameMode: GameMode;
+  setGameMode: (mode: GameMode) => void;
+  board: Board;
+  setBoard: (board: Board) => void;
+  solutionBoard: Board;
+  setSolutionBoard: (board: Board) => void;
+  isGameActive: boolean;
+  setIsGameActive: (active: boolean) => void;
+}
+
+const GameContext = createContext<GameContextType | undefined>(undefined);
+
+export const GameProvider = ({ children }: { children: ReactNode }) => {
+  const [gameMode, setGameMode] = useState<GameMode>('single');
+  const [board, setBoard] = useState<Board>([]);
+  const [solutionBoard, setSolutionBoard] = useState<Board>([]);
+  const [isGameActive, setIsGameActive] = useState(false);
+
+  return (
+    <GameContext.Provider
+      value={{
+        gameMode,
+        setGameMode,
+        board,
+        setBoard,
+        solutionBoard,
+        setSolutionBoard,
+        isGameActive,
+        setIsGameActive,
+      }}
+    >
+      {children}
+    </GameContext.Provider>
+  );
+};
+
+export const useGame = () => {
+  const context = useContext(GameContext);
+  if (context === undefined) {
+    throw new Error('useGame must be used within a GameProvider');
+  }
+  return context;
+};
+export type GameMode = 'single' | 'multi';
+
+export interface Tile {
+  color: string;
+  isEmpty: boolean;
+}
+
+export type Board = Tile[][];
+
+export interface Position {
+  row: number;
+  col: number;
+}
+
+export interface GameState {
+  board: Board;
+  solution: Board;
+  currentEmptyPos: Position;
+}
+import { Board, Tile, Position } from '../types';
+
+const COLORS = [
+  '#FF6B6B', // Red
+  '#4ECDC4', // Teal
+  '#45B7D1', // Blue
+  '#96CEB4', // Green
+  '#FFEEAD', // Yellow
+  '#D4A5A5'  // Pink
+];
+
+const GRID_SIZE = 5;
+export const EMPTY_POSITION: Position = { row: 4, col: 4 };
+
+export const createColorPattern = (): Tile[] => {
+  const tiles: Tile[] = [];
+  
+  // Create 4 tiles of each color
+  for (let colorIndex = 0; colorIndex < COLORS.length - 1; colorIndex++) {
+    for (let i = 0; i < 4; i++) {
+      tiles.push({ color: COLORS[colorIndex], isEmpty: false });
+    }
+  }
+  
+  // Add 4 tiles of the last color
+  for (let i = 0; i < 4; i++) {
+    tiles.push({ color: COLORS[COLORS.length - 1], isEmpty: false });
+  }
+  
+  // Add empty tile
+  tiles.push({ color: '#e5e7eb', isEmpty: true });
+  return tiles;
+};
+
+export const shuffleTiles = (tiles: Tile[]): Tile[] => {
+  const shuffled = [...tiles];
+  for (let i = shuffled.length - 2; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+export const createBoard = (tiles: Tile[]): Board => {
+  const board: Board = [];
+  for (let i = 0; i < GRID_SIZE; i++) {
+    board.push(tiles.slice(i * GRID_SIZE, (i + 1) * GRID_SIZE));
+  }
+  return board;
+};
+
+export const canMoveTile = (row: number, col: number, currentEmptyPos: Position): boolean => {
+  return (row === currentEmptyPos.row || col === currentEmptyPos.col) &&
+         !(row === currentEmptyPos.row && col === currentEmptyPos.col);
+};
+
+export const createInitialGameState = () => {
+  const tiles = createColorPattern();
+  const shuffledMainTiles = shuffleTiles(tiles);
+  const shuffledSolutionTiles = shuffleTiles(tiles);
+
+  return {
+    board: createBoard(shuffledMainTiles),
+    solution: createBoard(shuffledSolutionTiles),
+    currentEmptyPos: { ...EMPTY_POSITION }
+  };
+};
