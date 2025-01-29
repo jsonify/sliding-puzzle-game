@@ -8,9 +8,18 @@ app.use(express.static(path.join(__dirname, '/')));
 
 const rooms = new Map();
 const MAX_PLAYERS_PER_ROOM = 2;
+const connectedPlayers = new Map();
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
+    
+    socket.on('setUsername', (username) => {
+        connectedPlayers.set(socket.id, {
+            username: username,
+            status: 'available'
+        });
+        io.emit('playerList', Array.from(connectedPlayers.entries()));
+    });
 
     socket.on('findGame', () => {
         let joinedRoom = false;
@@ -66,6 +75,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
+        // Remove from connected players
+        connectedPlayers.delete(socket.id);
+        io.emit('playerList', Array.from(connectedPlayers.entries()));
+        
         // Handle disconnection and clean up rooms
         for (const [roomId, room] of rooms.entries()) {
             const playerIndex = room.players.indexOf(socket.id);

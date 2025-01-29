@@ -1,6 +1,41 @@
 const socket = io();
 let currentRoom = null;
 let isGameActive = false;
+let currentUsername = '';
+
+function setUsername() {
+    const usernameInput = document.getElementById('username');
+    const username = usernameInput.value.trim();
+    
+    if (username) {
+        currentUsername = username;
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        socket.emit('setUsername', username);
+    }
+}
+
+function updatePlayerList(players) {
+    const playerList = document.getElementById('playerList');
+    playerList.innerHTML = '';
+    
+    players.forEach(([playerId, playerData]) => {
+        if (playerId !== socket.id) {
+            const playerItem = document.createElement('div');
+            playerItem.className = 'player-item';
+            playerItem.innerHTML = `
+                <span>${playerData.username}</span>
+                <button onclick="challengePlayer('${playerId}')">Challenge</button>
+            `;
+            playerList.appendChild(playerItem);
+        }
+    });
+}
+
+function challengePlayer(playerId) {
+    socket.emit('challengePlayer', playerId);
+    document.getElementById('gameStatus').textContent = 'Challenge sent...';
+}
 
 const COLORS = [
     '#FF6B6B', // Red
@@ -210,6 +245,10 @@ function initializeGame() {
 }
 
 // Socket.IO Event Listeners
+socket.on('playerList', (players) => {
+    updatePlayerList(players);
+});
+
 socket.on('waiting', () => {
     document.getElementById('gameStatus').textContent = 'Waiting for opponent...';
 });
