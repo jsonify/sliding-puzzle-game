@@ -31,19 +31,32 @@ function selectGameMode(mode) {
     const gameStatus = document.getElementById('gameStatus');
     
     if (mode === 'single') {
+        // Show single player elements
         loginContainer.style.display = 'none';
         gameContainer.style.display = 'block';
         singlePlayerMode.style.display = 'block';
         multiPlayerMode.style.display = 'none';
         playerList.style.display = 'none';
         gameStatus.style.display = 'none';
-        document.querySelector('.solution-container').style.display = 'block';
+        
         // Reset game state
         currentRoom = null;
         isGameActive = false;
         currentUsername = '';
+        
+        // Initialize new game
         initializeGame();
+        
+        // Make sure solution container is visible
+        document.querySelector('.solution-container').style.display = 'block';
+        
+        // Enable the randomize button
+        const randomizeButton = document.getElementById('randomize');
+        if (randomizeButton) {
+            randomizeButton.disabled = false;
+        }
     } else {
+        // Show multiplayer elements
         loginContainer.style.display = 'block';
         gameContainer.style.display = 'none';
         singlePlayerMode.style.display = 'none';
