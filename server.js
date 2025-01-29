@@ -58,6 +58,46 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('challengePlayer', (challengedPlayerId) => {
+        const challenger = connectedPlayers.get(socket.id);
+        const challenged = connectedPlayers.get(challengedPlayerId);
+        
+        if (challenged && challenged.status === 'available') {
+            // Create a new room for the challenge
+            const roomId = 'room_' + Date.now();
+            socket.join(roomId);
+            io.to(challengedPlayerId).emit('challengeReceived', {
+                challengerId: socket.id,
+                challengerName: challenger.username,
+                roomId: roomId
+            });
+        }
+    });
+
+    socket.on('acceptChallenge', (data) => {
+        const { challengerId, roomId } = data;
+        socket.join(roomId);
+        
+        // Start the game
+        const gameState = {
+            roomId: roomId,
+            board: createInitialTiles(),
+            players: [challengerId, socket.id],
+            startTime: Date.now()
+        };
+        
+        rooms.set(roomId, {
+            players: [challengerId, socket.id],
+            gameState: gameState
+        });
+        
+        io.to(roomId).emit('gameStart', gameState);
+    });
+
+    socket.on('declineChallenge', (challengerId) => {
+        io.to(challengerId).emit('challengeDeclined', socket.id);
+    });
+
     socket.on('moveMade', (data) => {
         socket.broadcast.to(data.roomId).emit('opponentMove', {
             playerId: socket.id,
